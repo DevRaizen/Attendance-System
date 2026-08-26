@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GMNNHS Digital Attendance — Facial Recognition Logbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          ink:      '#10161D',
+          panel:    '#1B2430',
+          panel2:   '#232D3A',
+          paper:    '#EEF0EC',
+          paper2:   '#E4E7E0',
+          gold:     '#D8A54A',
+          goldSoft: '#E9C685',
+          line:     'rgba(255,255,255,0.12)',
+        },
+        fontFamily: {
+          display: ['"Fraunces"', 'serif'],
+          body: ['"Inter"', 'sans-serif'],
+          mono: ['"JetBrains Mono"', 'monospace'],
+        },
+      }
+    }
+  }
+</script>
+<style>
+  html { scroll-behavior: smooth; }
+  body { background: #EEF0EC; }
+
+  .grid-glow {
+    background-image:
+      linear-gradient(rgba(216,165,74,0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(216,165,74,0.08) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(ellipse 65% 65% at 50% 40%, black 30%, transparent 75%);
+  }
+
+  @keyframes scanline {
+    0%   { transform: translateY(0%); opacity: 0; }
+    8%   { opacity: 1; }
+    92%  { opacity: 1; }
+    100% { transform: translateY(228px); opacity: 0; }
+  }
+  .scan-line { animation: scanline 3.4s cubic-bezier(.65,0,.35,1) infinite; }
+
+  @keyframes blink-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .25; }
+  }
+  .blink-dot { animation: blink-dot 1.6s ease-in-out infinite; }
+
+  .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+
+  .corner { position: absolute; width: 26px; height: 26px; border-color: #D8A54A; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scan-line, .blink-dot { animation: none !important; }
+    .reveal { opacity: 1 !important; transform: none !important; }
+  }
+
+  .btn-proceed {
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-proceed::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: rgba(255,255,255,0.35);
+    transform: translateX(-110%) skewX(-12deg);
+    transition: transform .55s ease;
+  }
+  .btn-proceed:hover::after { transform: translateX(110%) skewX(-12deg); }
+</style>
+</head>
+<body class="font-body text-ink antialiased">
+
+<!-- ============ NAV ============ -->
+<header class="fixed top-0 inset-x-0 z-50 backdrop-blur bg-ink/70 border-b border-line">
+  <div class="max-w-6xl mx-auto px-6 md:px-10 h-16 flex items-center justify-between">
+    <div class="flex items-center gap-2.5">
+      <span class="w-2.5 h-2.5 rounded-full bg-gold blink-dot"></span>
+      <span class="font-mono text-[11px] tracking-[0.18em] text-paper/80 uppercase">GMNNHS · Advance Digitalized Logbook Attendance and leavemanagement system using face recognition</span>
+    </div>
+    <a href="#proceed" class="hidden sm:inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.14em] uppercase text-paper/60 hover:text-gold transition-colors">
+      Get started <span aria-hidden="true">→</span>
+    </a>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="relative min-h-screen bg-ink text-paper flex items-center overflow-hidden pt-16">
+  <div class="absolute inset-0 grid-glow"></div>
+  <div class="absolute -top-32 -right-32 w-[520px] h-[520px] rounded-full bg-gold/5 blur-3xl"></div>
+
+  <div class="relative max-w-6xl mx-auto px-6 md:px-10 py-20 grid lg:grid-cols-[1.15fr_0.85fr] gap-16 items-center w-full">
+
+    <div class="reveal in">
+      <p class="font-mono text-xs tracking-[0.22em] text-gold uppercase mb-6">General Mamerto Natividad National High School</p>
+      <h1 class="font-display font-medium text-[2.6rem] leading-[1.08] sm:text-6xl sm:leading-[1.05] mb-6">
+        Attendance,<br>
+        <span class="italic text-goldSoft">recognized</span> the moment<br>
+        you walk in.
+      </h1>
+      <p class="text-paper/65 text-lg leading-relaxed max-w-md mb-10">
+        A facial-recognition attendance system built to retire the paper logbook — every arrival logged automatically, every record accurate, every minute given back to teaching.
+      </p>
+      <div class="flex flex-wrap items-center gap-5">
+        <a href="#background" class="btn-proceed inline-flex items-center gap-3 bg-gold text-ink font-mono text-xs tracking-[0.14em] uppercase font-semibold px-7 py-4 rounded-sm hover:bg-goldSoft transition-colors">
+          Proceed <span aria-hidden="true">→</span>
+        </a>
+        <span id="clock" class="font-mono text-xs text-paper/40 tracking-wider">00:00:00</span>
+      </div>
+    </div>
+
+    <!-- Signature: scan viewfinder -->
+    <div class="reveal in relative mx-auto w-full max-w-[280px] aspect-[4/5]" style="transition-delay:.15s">
+      <div class="absolute inset-0 rounded-md bg-panel border border-line overflow-hidden">
+        <!-- silhouette -->
+        <svg viewBox="0 0 200 250" class="absolute inset-0 w-full h-full opacity-90">
+          <circle cx="100" cy="92" r="42" fill="#2C3847"/>
+          <path d="M30 250 C30 175 60 150 100 150 C140 150 170 175 170 250 Z" fill="#2C3847"/>
+        </svg>
+        <!-- scan line -->
+        <div class="scan-line absolute left-3 right-3 top-3 h-[2px] bg-gold shadow-[0_0_12px_2px_rgba(216,165,74,0.7)]"></div>
+        <!-- corner brackets -->
+        <div class="corner border-t-2 border-l-2" style="top:14px;left:14px;"></div>
+        <div class="corner border-t-2 border-r-2" style="top:14px;right:14px;"></div>
+        <div class="corner border-b-2 border-l-2" style="bottom:14px;left:14px;"></div>
+        <div class="corner border-b-2 border-r-2" style="bottom:14px;right:14px;"></div>
+      </div>
+      <div class="mt-4 flex items-center justify-between font-mono text-[11px] tracking-wide">
+        <span id="scanStatus" class="text-gold">LOCATING FACE…</span>
+        <span class="text-paper/40">ID 0427</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ BACKGROUND OF STUDY ============ -->
+<section id="background" class="bg-paper py-24 md:py-32">
+  <div class="max-w-6xl mx-auto px-6 md:px-10">
+    <div class="grid lg:grid-cols-[0.8fr_1.2fr] gap-14">
+
+      <div class="reveal">
+        <p class="font-mono text-xs tracking-[0.22em] text-ink/40 uppercase mb-4">01 — Context</p>
+        <h2 class="font-display text-4xl md:text-[2.75rem] leading-[1.1] font-medium mb-8">
+          Background<br>of the Study
+        </h2>
+        <div class="border-l-2 border-gold pl-5 py-1">
+          <p class="font-display italic text-xl leading-snug text-ink/80">
+            "Attendance is one of the major factors for measuring eligibility, punctuality, and commitment to the institution."
+          </p>
+        </div>
+      </div>
+
+      <div class="reveal space-y-6 text-ink/70 text-[1.05rem] leading-relaxed" style="transition-delay:.1s">
+        <p>
+          At General Mamerto Natividad National High School, teacher attendance and punctuality are critical determinants of academic efficiency and student success. Traditional monitoring systems exist to ensure professional accountability, administrative compliance, and accurate payroll processing — attendance tracking remains one of the most critical administrative tasks a school performs.
+        </p>
+        <p>
+          Under the Department of Education, attendance and punctuality are treated as core professional requirements governed by both Civil Service Commission rules and specific DepEd orders. Tracking attendance is necessary, but the manual methods used to collect it often create more friction than they resolve, slowing down daily school operations rather than supporting them.
+        </p>
+        <p>
+          This study responds to that gap. The system is trained on a database of teacher records — name, photo, and personal details — so that attendance is captured automatically the moment a teacher arrives on campus, using facial recognition. It was designed specifically for GMNNHS to address the time this large faculty size demands: manual record-keeping that once consumed valuable hours for both teachers and administrators is replaced by a system that logs time in, time out, and absences on its own, simplifying record-keeping and optimizing operational efficiency across the institution.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ SCOPE ============ -->
+<section id="scope" class="bg-ink text-paper py-24 md:py-32 relative overflow-hidden">
+  <div class="absolute inset-0 grid-glow opacity-60"></div>
+  <div class="relative max-w-6xl mx-auto px-6 md:px-10">
+    <div class="reveal mb-14 max-w-xl">
+      <p class="font-mono text-xs tracking-[0.22em] text-gold uppercase mb-4">02 — Scope</p>
+      <h2 class="font-display text-4xl md:text-[2.75rem] leading-[1.1] font-medium">
+        What the system<br>covers
+      </h2>
+    </div>
+
+    <div class="grid sm:grid-cols-2 gap-px bg-line rounded-md overflow-hidden">
+
+      <div class="reveal bg-panel p-8 md:p-10">
+        <span class="font-mono text-gold text-sm tracking-widest">01</span>
+        <h3 class="font-display text-xl mt-4 mb-3">A digital logbook, built for this faculty</h3>
+        <p class="text-paper/60 leading-relaxed">
+          A digitalized logbook application made specifically for the teachers and faculty of General Mamerto Natividad National High School.
+        </p>
+      </div>
+
+      <div class="reveal bg-panel p-8 md:p-10" style="transition-delay:.08s">
+        <span class="font-mono text-gold text-sm tracking-widest">02</span>
+        <h3 class="font-display text-xl mt-4 mb-3">Attendance, taken automatically</h3>
+        <p class="text-paper/60 leading-relaxed">
+          The primary feature is an automated attendance system that recognizes each teacher's face and logs their arrival on its own.
+        </p>
+      </div>
+
+      <div class="reveal bg-panel p-8 md:p-10" style="transition-delay:.16s">
+        <span class="font-mono text-gold text-sm tracking-widest">03</span>
+        <h3 class="font-display text-xl mt-4 mb-3">One record, not a shelf of logbooks</h3>
+        <p class="text-paper/60 leading-relaxed">
+          The traditional paper-based logbook is retired in favor of a single centralized digital logbook, accessible whenever it's needed.
+        </p>
+      </div>
+
+      <div class="reveal bg-panel p-8 md:p-10" style="transition-delay:.24s">
+        <span class="font-mono text-gold text-sm tracking-widest">04</span>
+        <h3 class="font-display text-xl mt-4 mb-3">A dashboard for administrators</h3>
+        <p class="text-paper/60 leading-relaxed">
+          Authorized administrators get a clear overview of employee attendance — time in, time out, and absences — in one dashboard.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ FINAL CTA ============ -->
+<section id="proceed" class="bg-paper py-28 md:py-36">
+  <div class="max-w-3xl mx-auto px-6 text-center reveal">
+    <p class="font-mono text-xs tracking-[0.22em] text-ink/40 uppercase mb-5">Ready when you are</p>
+    <h2 class="font-display text-4xl md:text-5xl leading-tight font-medium mb-8">
+      Step in, and let<br>the system see you.
+    </h2>
+    <!-- Update this href to point to the login / capture screen of the actual application -->
+    <a href="#top" class="btn-proceed inline-flex items-center gap-3 bg-ink text-paper font-mono text-xs tracking-[0.14em] uppercase font-semibold px-9 py-5 rounded-sm hover:bg-panel transition-colors">
+      Proceed <span aria-hidden="true">→</span>
+    </a>
+  </div>
+</section>
+
+<footer class="bg-ink border-t border-line py-8">
+  <div class="max-w-6xl mx-auto px-6 md:px-10 flex flex-col sm:flex-row items-center justify-between gap-3 font-mono text-[11px] tracking-wide text-paper/35">
+    <span>© 2026 General Mamerto Natividad National High School</span>
+    <span>Advance Digitalized Logbook Attendance and leave management system using face recognition</span>
+  </div>
+</footer>
+
+<script>
+  // Live clock
+  const clockEl = document.getElementById('clock');
+  function tick() {
+    const d = new Date();
+    clockEl.textContent = d.toLocaleTimeString('en-GB', { hour12: false });
+  }
+  tick(); setInterval(tick, 1000);
+
+  // Scanning status cycle
+  const statuses = ['LOCATING FACE…', 'MATCHING DATABASE…', 'VERIFIED ✓'];
+  let sIdx = 0;
+  const statusEl = document.getElementById('scanStatus');
+  setInterval(() => {
+    sIdx = (sIdx + 1) % statuses.length;
+    statusEl.textContent = statuses[sIdx];
+    statusEl.classList.toggle('text-goldSoft', sIdx === 2);
+  }, 1700);
+
+  // Reveal on scroll
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>
