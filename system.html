@@ -116,11 +116,7 @@
         <span>Teachers</span>
         <span class="navdot ml-auto w-1.5 h-1.5 rounded-full bg-gold"></span>
       </button>
-      <button data-target="dtr" class="navlink w-full flex items-center gap-3 px-4 py-3 rounded-md text-sm text-paper/70 hover:bg-white/5 hover:text-paper transition-colors text-left">
-        <svg class="w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 3h7l4 4v14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M14 3v4h4"/><path d="M8 12h8M8 15.5h8M8 8.5h3"/></svg>
-        <span>Daily Time Record</span>
-        <span class="navdot ml-auto w-1.5 h-1.5 rounded-full bg-gold"></span>
-      </button>
+      
     </nav>
 
     <div class="px-3 pb-6">
@@ -433,7 +429,7 @@
   const navlinks = document.querySelectorAll('.navlink');
   const views = document.querySelectorAll('.view');
   const viewTitle = document.getElementById('viewTitle');
-  const titles = { dashboard:'Dashboard', scan:'Live Scan', teachers:'Teachers', dtr:'Daily Time Record' };
+  const titles = { dashboard:'Dashboard', scan:'Live Scan', teachers:'Teachers' };
   navlinks.forEach(btn => {
     btn.addEventListener('click', () => {
       navlinks.forEach(b => b.classList.remove('active'));
