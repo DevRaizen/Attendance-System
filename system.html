@@ -462,18 +462,17 @@
     statusEl.className = sIdx === 2 ? 'text-good' : 'text-ink/70';
   }, 1700);
 
-  // teachers data
-  const teachers = [
-    { name:'Josefina Ramos', dept:'Mathematics', status:'Present' },
-    { name:'Manuel Cruz', dept:'Science', status:'Present' },
-    { name:'Erlinda Santos', dept:'English', status:'Present' },
-    { name:'Ferdinand Reyes', dept:'MAPEH', status:'Late' },
-    { name:'Angelica Torres', dept:'Filipino', status:'Present' },
-    { name:'Ricardo Bautista', dept:'TLE', status:'Absent' },
-    { name:'Corazon Villanueva', dept:'Araling Panlipunan', status:'Present' },
-    { name:'Nestor Aquino', dept:'ICT', status:'Late' },
-    { name:'Teresita Mendoza', dept:'Science', status:'Present' },
-  ];
+const teachers = [
+  { name:'Jay-R Lactao', dept:'ICT', status:'Present' },
+  { name:'Alvin Arenas', dept:'MAPEH', status:'Present' },
+  { name:'Lovelyn Lagasca', dept:'English', status:'Present' },
+  { name:'Mark Anthony Agustin', dept:'Mathematics', status:'Present' },
+  { name:'Miscelle Santiago', dept:'ESP', status:'Present' },
+  { name:'Rhea Joy Evangelista', dept:'Filipino', status:'Present' },
+  { name:'Yazer Diaz', dept:'Araling Panlipunan', status:'Present' },
+  { name:'Margie Lopez', dept:'Science', status:'Present' },
+];
+
   const statusColor = { Present:'good', Late:'warn', Absent:'bad' };
   function initials(n){ return n.split(' ').map(w=>w[0]).slice(0,2).join(''); }
 
